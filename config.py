@@ -87,16 +87,6 @@ ADCLOW = VLOWBAT / (ADCVREF / 1024.0)
 #  * 1024.0 is the number of possible values (MCP23008 is a 10 bit ADC)
 ADCDNG = VDNGBAT / (ADCVREF / 1024.0)
 
-# MCP should return a value lower than this one when no battery is plugged.
-# You should not use 0 because value is floatting around 0 / 150 when nothing
-#  is plugged to a analog channel. 
-ADCUNP = 300 # No battery plugged
-
-# Maximal MCP return value to consider as "voltage bounce" when kill switch is
-#  activated and voltage rises again as current use is reduced. This avoid to
-#  switch from dangerous mode to low battery mode and back for a long time.
-ADCDNGBOUNCE = ADCDNG + 200
-
 # Refresh rate (ms)
 REFRESH_RATE = 2000
 
