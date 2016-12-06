@@ -18,8 +18,7 @@ status = 0
 def changeicon(percent):
     i = 0
     killid = 0
-    os.system(PNGVIEWPATH + "/pngview -b 0 -l 3000" + percent + " -x 650 -y 5 " + ICONPATH + "/battery" + percent + ".png &")
-    if DEBUGMSG == 1:
+    os.system(PNGVIEWPATH + "/pngview -b 0 -l 3000" + percent + " -x 650 -y 5 " + ICONPATH + "/battery" + percent + ".png &")    if DEBUGMSG == 1:
         print("Changed battery icon to " + percent + "%")
     out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
     nums = out.split('\n')
@@ -47,8 +46,7 @@ def endProcess(signalnum = None, handler = None):
 
 # Put pins to out mode and low state.
 def initPins():
-
-	GPIO.setup(GOODVOLTPIN, GPIO.OUT)
+    GPIO.setup(GOODVOLTPIN, GPIO.OUT)
     GPIO.setup(LOWVOLTPIN, GPIO.OUT)
     GPIO.output(GOODVOLTPIN, GPIO.LOW)
     GPIO.output(LOWVOLTPIN, GPIO.LOW)
@@ -59,8 +57,8 @@ if DEBUGMSG == 1:
     print("Batteries low voltage:        " + str(VLOWBAT))
     print("Batteries dangerous voltage:  " + str(VDNGBAT))
     print("ADC high voltage value:       " + str(ADCHIGH))
-    print("ADC low voltage value:        " + str(ADCLOW))
-    print("ADC dangerous voltage value:  " + str(ADCDNG))
+    print("ADC low voltage value:        " + str(ADC25))
+    print("ADC dangerous voltage value:  " + str(ADC0))
 
 # Prepare handlers for process exit
 signal.signal(signal.SIGTERM, endProcess)
@@ -83,7 +81,7 @@ while True:
     if DEBUGMSG == 1:
       print("ADC value: " + str(ret) + " (" + str((3.3 / 1024.0) * ret) + " V)")
  
-    if ret < ADCDNG:
+    if ret < ADC0:
         if status != 0:
             changeicon("0")
             changeled("red")
