@@ -87,7 +87,8 @@ while True:
         if status != 0:
             changeicon("0")
             changeled("red")
-	    os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
+	    if CLIPS == 1:
+	        os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
         status = 0
     elif ret < ADC25:
         # Low battery warning: Switch LED to red, play warning clip
@@ -95,7 +96,8 @@ while True:
             changeled("red")
             changeicon("25")
             if warning != 1:
-                os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattalert.mp4 --alpha 160")
+		if CLIPS == 1:
+                    os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattalert.mp4 --alpha 160")
                 warning = 1
         status = 25
     elif ret < ADC50:
