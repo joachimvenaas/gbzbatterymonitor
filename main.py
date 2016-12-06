@@ -98,7 +98,7 @@ while True:
         status = 25
     elif ret < ADC50:
         if status != 50:
-            changelev("green")
+            changeled("green")
             changeicon("50")
         status = 50
     elif ret < ADC75:
