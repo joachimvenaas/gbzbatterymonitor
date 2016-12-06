@@ -76,7 +76,7 @@ while True:
     ret = ret/3
 
     if DEBUGMSG == 1:
-      print("ADC value: " + str(ret) + " (" + st + " V)")
+      print("ADC value: " + str(ret) + " (" + str(((HIGHRESVAL+LOWRESVAL)*(ret*(ADCVREF/1024)))/HIGHRESVAL) + " V)")
  
     if ret < ADC0:
         if status != 0:
