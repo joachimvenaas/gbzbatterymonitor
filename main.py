@@ -10,14 +10,15 @@ from subprocess import check_output
 
 from config import *
 from mcp3008 import *
+
 warning = 0
 status = 0
 
-# pngview function
 def changeicon(percent):
     i = 0
     killid = 0
-    os.system(PNGVIEWPATH + "/pngview -b 0 -l 3000" + percent + " -x 650 -y 5 " + ICONPATH + "/battery" + percent + ".png &")    if DEBUGMSG == 1:
+    os.system(PNGVIEWPATH + "/pngview -b 0 -l 3000" + percent + " -x 650 -y 5 " + ICONPATH + "/battery" + percent + ".png &")
+    if DEBUGMSG == 1:
         print("Changed battery icon to " + percent + "%")
     out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
     nums = out.split('\n')
@@ -27,7 +28,6 @@ def changeicon(percent):
             killid = num
             os.system("sudo kill " + killid)		
 
-# LED function
 def changeled(x):
     if LEDS == 1:
         if x == "green":
@@ -37,17 +37,16 @@ def changeled(x):
             GPIO.output(GOODVOLTPIN, GPIO.LOW)
             GPIO.output(LOWVOLTPIN, GPIO.HIGH)
 
-# Called on process interruption. Set all pins to "Input" default mode.
-tdef endProcess(signalnum = None, handler = None):
+def endProcess(signalnum = None, handler = None):
     GPIO.cleanup()
     os.system("sudo killall pngview");
     exit(0)
 
-# Put pins to out mode and low state.
 def initPins():
     GPIO.setup(GOODVOLTPIN, GPIO.OUT)
     GPIO.setup(LOWVOLTPIN, GPIO.OUT)
-    GPIO.output(GOODVOLTPIN, GPIO.LOW)   GPIO.output(LOWVOLTPIN, GPIO.LOW)
+    GPIO.output(GOODVOLTPIN, GPIO.LOW)
+    GPIO.output(LOWVOLTPIN, GPIO.LOW)
 
 if DEBUGMSG == 1:
     print("Batteries high voltage:       " + str(VOLT100))
@@ -63,7 +62,6 @@ signal.signal(signal.SIGINT, endProcess)
 
 GPIO.setmode(GPIO.BOARD)
 initPins()
-
 os.system(PNGVIEWPATH + "/pngview -b 0 -l 299999 -x 650 -y 5 " + ICONPATH + "/blank.png &")
 
 while True:
@@ -76,7 +74,7 @@ while True:
     ret = ret/3
 
     if DEBUGMSG == 1:
-      print("ADC value: " + str(ret) + " (" + str(((HIGHRESVAL+LOWRESVAL)*(ret*(ADCVREF/1024)))/HIGHRESVAL) + " V)")
+        print("ADC value: " + str(ret) + " (" + str(((HIGHRESVAL+LOWRESVAL)*ret*(ADCVREF/1024))/HIGHRESVAL) + " V)")
  
     if ret < ADC0:
         if status != 0:
