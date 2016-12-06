@@ -1,119 +1,71 @@
-#!/usr/bin/python
-import RPi.GPIO as GPIO
-import time
-import array
-import os
-import signal
-import subprocess
-import math
-from subprocess import check_output
+"""
+" Edit below this line to fit your needs
+"""
+# Path to pngview (raspidmx) and icons
+PNGVIEWPATH = "/home/pi/raspidmx/pngview"
+ICONPATH = "/home/pi/gbzbattery/icons"
 
-from config import *
-from mcp3008 import *
+# Battery icon or LED? Or both?
+LEDS = 1
+ICON = 1
+CLIPS = 1
 
-warning = 0
-status = 0
+# GPIO (BOARD numbering scheme) pin for good voltage LED
+GOODVOLTPIN = 16
+LOWVOLTPIN = 15
 
-# pngview function
-def changeicon(percent):
-    i = 0
-    killid = 0
-    os.system(PNGVIEWPATH + "/pngview -b 0 -l 3000" + percent + " -x 650 -y 5 " + ICONPATH + "/battery" + percent + ".png &")
-    if DEBUGMSG == 1:
-        print("Changed battery icon to " + percent + "%")
-    out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
-    nums = out.split('\n')
-    for num in nums:
-        i += 1
-        if i == 1:
-            killid = num
-            os.system("sudo kill " + killid)
+# Fully charged voltage (for a single battery); 
+#   i.e. 1.4V for a NiMH battery, or 4.2V for a LiPo battery
+FULLBATVOLT = 4.1
 
-# LED function
-def changeled(x):
-    if LEDS == 1:
-        if x == "green":
-            GPIO.output(GOODVOLTPIN, GPIO.HIGH)
-            GPIO.output(LOWVOLTPIN, GPIO.LOW)
-        elif x == "red":
-            GPIO.output(GOODVOLTPIN, GPIO.LOW)
-            GPIO.output(LOWVOLTPIN, GPIO.HIGH)
+# Discharged voltage (for a single battery); 
+#   i.e. 1.05V for a NiMH battery, or 3.4V for a LiPo battery#   You should use a conservative value in order to avoid destructive
+#   discharging
+LOWBATVOLT = 3.4
 
-# Called on process interruption. Set all pins to "Input" default mode.
-def endProcess(signalnum = None, handler = None):
-    GPIO.cleanup()
-    os.system("sudo killall pngview");
-    exit(0)
+# Dangerous voltage (for a single battery);
+#   i.e. 1.0V for a NiMH battery, or 3.2V for a LiPo battery
+#   You should really not go below this voltage.
+DNGBATVOLT = 3.2
 
-# Put pins to out mode and low state.
-def initPins():
-    GPIO.setup(GOODVOLTPIN, GPIO.OUT)
-    GPIO.setup(LOWVOLTPIN, GPIO.OUT)
-    GPIO.output(GOODVOLTPIN, GPIO.LOW)
-    GPIO.output(LOWVOLTPIN, GPIO.LOW)
+# Value (in ohms) of the lower resistor from the voltage divider, connected to
+#   the ground line (1 if no voltage divider). Default value (3900) is for a 
+#   battery pack of 8 NiMH batteries, providing 11.2V max, stepped down to about
+#   3.2V max.
+LOWRESVAL = 2000
 
+# Value (in ohms) of the higher resistor from the voltage divider, connected to 
+#   the positive line (0 if no voltage divider). Default value (10000) is for a
+#   battery pack of 8 NiMH batteries, providing 11.2V max, stepped down to about
+#   3.2V max.
+HIGHRESVAL = 5600
 
-if DEBUGMSG == 1:
-    print("Batteries high voltage:       " + str(VHIGHBAT))
-    print("Batteries low voltage:        " + str(VLOWBAT))
-    print("Batteries dangerous voltage:  " + str(VDNGBAT))
-    print("ADC high voltage value:       " + str(ADC100))
-    print("ADC low voltage value:        " + str(ADC25))
-    print("ADC dangerous voltage value:  " + str(ADC0))
+# Voltage value measured by the MCP3008 when batteries are fully charged
 
-# Prepare handlers for process exit
-signal.signal(signal.SIGTERM, endProcess)
-signal.signal(signal.SIGINT, endProcess)
+# It should be near 3.3V due to Raspberry Pi GPIO compatibility)
+VHIGHBAT = (FULLBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
 
-GPIO.setmode(GPIO.BOARD)
-initPins()
+# Voltage value measured by the MCP3008 when batteries are discharged
+VLOWBAT = (LOWBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
+VDNGBAT = (DNGBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
 
-os.system(PNGVIEWPATH + "/pngview -b 0 -l 299999 -x 650 -y 5 " + ICONPATH + "/blank.png &")
+# ADC voltage reference (3.3V for Raspberry Pi)
+ADCVREF = 3.3
 
-while True:
-    ret1 = readadc(ADCCHANNEL, SPICLK, SPIMOSI, SPIMISO, SPICS)
-    time.sleep(3)
-    ret2 = readadc(ADCCHANNEL, SPICLK, SPIMOSI, SPIMISO, SPICS)
-    time.sleep(3)
-    ret3 = readadc(ADCCHANNEL, SPICLK, SPIMOSI, SPIMISO, SPICS)
-    ret = ret1 + ret2 + ret3
-    ret = ret/3
+# MCP23008 channel to use (from 0 to 7)
+ADCCHANNEL = 0
 
-    if DEBUGMSG == 1:
-      print("ADC value: " + str(ret) + " (" + str((3.3 / 1024.0) * ret) + " V)")
- 
-    if ret < ADC0:
-        # Dangerous battery voltage: Shutdown
-        if status != 0:
-            changeicon("0")
-            changeled("red")
-	    if CLIPS == 1:
-	        os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
-        status = 0
-    elif ret < ADC25:
-        # Low battery warning: Switch LED to red, play warning clip
-        if status != 25:
-            changeled("red")
-            changeicon("25")
-            if warning != 1:
-		if CLIPS == 1:
-                    os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattalert.mp4 --alpha 160")
-                warning = 1
-        status = 25
-    elif ret < ADC50:
-        if status != 50:
-            changelev("green")
-            changeicon("50")
-        status = 50
-    elif ret < ADC75:
-        if status != 75:
-            changeled("green")
-            changeicon("75")
-        status = 75
-    else:
-        if status != 100:
-            changeled("green")
-            changeicon("100")      
-        status = 100
+# MCP23008 should return this value when batteries are fully charged
+#  * 3.3 is the reference voltage (got from Raspberry Pi's +3.3V power line)
+#  * 1024.0 is the number of possible values (MCP23008 is a 10 bit ADC)
+ADC100 = VHIGHBAT / (ADCVREF / 1024.0)
+ADC75 = 860
+ADC50 = 830
+ADC25 = 800
+ADC0 = VDNGBAT / (ADCVREF / 1024.0)
 
-    time.sleep(REFRESH_RATE)
+# Refresh rate (s)
+REFRESH_RATE = 2
+
+# Display some debug values when set to 1, and nothing when set to 0
+DEBUGMSG = 0
