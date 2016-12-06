@@ -7,8 +7,7 @@
 
 ## Software part
 1. Install https://github.com/AndrewFromMelbourne/raspidmx/ and make
-2. Install this script by running the following command from terminal or ssh:
-'git clone'
+2. Install this script by running the following command from terminal or ssh: 'git clone https://github.com/joachimvenaas/gbzbatterymonitor'
 
 
 
