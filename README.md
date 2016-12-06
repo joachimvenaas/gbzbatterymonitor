@@ -3,7 +3,7 @@
 # Installation
 
 ## Hardware part
-1. Buy a MCP3008 and some resistors suitable for this project, you can calculate resistor value here http://www.raltron.com/cust/tools/voltage_divider.asp, Vin = 4.2V and Vout needs to be maximum 3.3V
+1. Buy a MCP3008 and some resistors suitable for this project, you can calculate resistor value here: [voltage divider calculator](http://www.raltron.com/cust/tools/voltage_divider.asp), Vin = 4.2V and Vout needs to be maximum 3.3V
 
 ## Software part
 1. Install [Raspidmx (pngview)](https://github.com/AndrewFromMelbourne/raspidmx/) and compile it by using `make`
@@ -23,6 +23,7 @@
 5. Edit the config.py file with the newly gattered data to get more accurate batterymeter
 
 ##### Sources and inspiration:
-https://github.com/aboudou/picheckvoltage
-https://github.com/Camble/GBZ-Power-Monitor_PB
-https://github.com/AndrewFromMelbourne/raspidmx/
+- www.sudomod.com
+- https://github.com/aboudou/picheckvoltage
+- https://github.com/Camble/GBZ-Power-Monitor_PB
+- https://github.com/AndrewFromMelbourne/raspidmx/
