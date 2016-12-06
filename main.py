@@ -49,12 +49,16 @@ def initPins():
     GPIO.output(LOWVOLTPIN, GPIO.LOW)
 
 if DEBUGMSG == 1:
-    print("Batteries high voltage:       " + str(VOLT100))
-    print("Batteries low voltage:        " + str(VOLT25))
-    print("Batteries dangerous voltage:  " + str(VOLT0))
-    print("ADC high voltage value:       " + str(ADC100))
-    print("ADC low voltage value:        " + str(ADC25))
-    print("ADC dangerous voltage value:  " + str(ADC0))
+    print("Batteries 100% voltage:		" + str(VOLT100))
+    print("Batteries 75% voltage:		" + str(VOLT75))
+    print("Batteries 50% voltage:       " + str(VOLT50))
+    print("Batteries 25% voltage:       " + str(VOLT25))
+    print("Batteries dangerous voltage: " + str(VOLT0))
+    print("ADC 100% value:      	 	" + str(ADC100))
+    print("ADC 75% value:      	 		" + str(ADC75))
+    print("ADC 50% value:      	 		" + str(ADC50))
+    print("ADC 25% value:       		" + str(ADC25))
+    print("ADC dangerous voltage value: " + str(ADC0))
 
 # Prepare handlers for process exit
 signal.signal(signal.SIGTERM, endProcess)
