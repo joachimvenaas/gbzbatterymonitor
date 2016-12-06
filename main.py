@@ -47,7 +47,8 @@ def endProcess(signalnum = None, handler = None):
 
 # Put pins to out mode and low state.
 def initPins():
-    GPIO.setup(GOODVOLTPIN, GPIO.OUT)
+
+	GPIO.setup(GOODVOLTPIN, GPIO.OUT)
     GPIO.setup(LOWVOLTPIN, GPIO.OUT)
     GPIO.output(GOODVOLTPIN, GPIO.LOW)
     GPIO.output(LOWVOLTPIN, GPIO.LOW)
@@ -82,28 +83,28 @@ while True:
     if DEBUGMSG == 1:
       print("ADC value: " + str(ret) + " (" + str((3.3 / 1024.0) * ret) + " V)")
  
-    if ret < ADCDNG: #780?
-        # Dangerous battery voltage: Shutdown
+    if ret < ADCDNG:
         if status != 0:
             changeicon("0")
             changeled("red")
-	    os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
+            if CLIPS == 1:
+	        os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
         status = 0
-    elif ret < ADC25: #800
-        # Low battery warning: Switch LED to red, play warning clip
+    elif ret < ADC25:
         if status != 25:
             changeled("red")
             changeicon("25")
             if warning != 1:
-                os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattalert.mp4 --alpha 160")
+		if CLIPS == 1:
+                    os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattalert.mp4 --alpha 160")
                 warning = 1
         status = 25
-    elif ret < ADC50: #830
+    elif ret < ADC50:
         if status != 50:
             changelev("green")
             changeicon("50")
         status = 50
-    elif ret < ADC75: #860
+    elif ret < ADC75:
         if status != 75:
             changeled("green")
             changeicon("75")
