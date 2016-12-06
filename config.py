@@ -6,7 +6,7 @@ PNGVIEWPATH = "/home/pi/raspidmx/pngview"
 ICONPATH = "/home/pi/gbzbattery/icons"
 
 # Battery icon, LED or videoclips? Or all of them?
-LEDS = 1
+LEDS = 0
 ICON = 1
 CLIPS = 1
 
@@ -14,7 +14,8 @@ CLIPS = 1
 GOODVOLTPIN = 16
 LOWVOLTPIN = 15
 
-# Fully charged voltage, voltage at the percentage steps and shutdown voltage
+# Fully charged voltage, voltage at the percentage steps and shutdown voltage. This is where you edit when finetuning the batterymonitor
+# by using the monitor.py script.
 VOLT100 = 4.1
 VOLT75 = 3.76
 VOLT50 = 3.63
@@ -39,7 +40,7 @@ ADCCHANNEL = 0
 REFRESH_RATE = 2
 
 # Display some debug values when set to 1, and nothing when set to 0
-DEBUGMSG = 0
+DEBUGMSG = 1
 
 # Voltage value measured by the MCP3008 when batteries are fully charged. It should be near 3.3V due to Raspberry Pi GPIO compatibility)
 # Be careful to edit below this line.
