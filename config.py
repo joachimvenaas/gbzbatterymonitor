@@ -45,9 +45,6 @@ VHIGHBAT = (FULLBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
 
 # Voltage value measured by the MCP3008 when batteries are discharged
 VLOWBAT = (LOWBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
-
-# Voltage value measured by the MCP3008 when batteries voltage is dangerously
-#   low
 VDNGBAT = (DNGBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
 
 # ADC voltage reference (3.3V for Raspberry Pi)
@@ -60,9 +57,11 @@ ADCCHANNEL = 0
 # MCP23008 should return this value when batteries are fully charged
 #  * 3.3 is the reference voltage (got from Raspberry Pi's +3.3V power line)
 #  * 1024.0 is the number of possible values (MCP23008 is a 10 bit ADC)
-ADCHIGH = VHIGHBAT / (ADCVREF / 1024.0)
-ADCLOW = VLOWBAT / (ADCVREF / 1024.0)
-ADCDNG = VDNGBAT / (ADCVREF / 1024.0)
+ADC100 = VHIGHBAT / (ADCVREF / 1024.0)
+ADC75 = 860
+ADC50 = 830
+ADC25 = 800
+ADC0 = VDNGBAT / (ADCVREF / 1024.0)
 
 # Refresh rate (s)
 REFRESH_RATE = 2
