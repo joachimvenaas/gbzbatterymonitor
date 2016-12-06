@@ -31,6 +31,6 @@ while True:
     ret3 = readadc(ADCCHANNEL, SPICLK, SPIMOSI, SPIMISO, SPICS)
     ret = ret1 + ret2 + ret3
     ret = ret/3
-    print("Time     " + str(ret) + "    " + str(((HIGHRESVAL+LOWRESVAL)*ret*(ADCVREF/1024))/HIGHRESVAL))
+    print(strftime("%H:%M", localtime()) + "         " + str(ret) + "    " + str(((HIGHRESVAL+LOWRESVAL)*ret*(ADCVREF/1024))/HIGHRESVAL))
         
     time.sleep(1)
