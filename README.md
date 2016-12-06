@@ -13,7 +13,8 @@
 5. Test the script by running command: `python main.py`
 6. If the script runs as desired you can close it by pressing Ctrl+C
 7. Add the script to startup by typing `sudo nano /etc/rc.local` and add `python /home/pi/gbzbattery/main.py &` before `exit 0`
-#### Optional
+
+### Optional
 1. Charge your battery to 100%
 2. Run `python monitor.py` to get the exact values from the battery
 3. Let the battery run down to 3.2V
