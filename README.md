@@ -3,7 +3,7 @@
 # Installation
 
 ## Hardware part
-1. Buy a MCP3008 and some resistors suitable for this project, you can calculate resistor value here: [voltage divider calculator](http://www.raltron.com/cust/tools/voltage_divider.asp), Vin = 4.2V and Vout needs to be maximum 3.3V
+1. Buy a MCP3008 and some resistors suitable for this project, you can calculate resistor value here: [voltage divider calculator](http://www.raltron.com/cust/tools/voltage_divider.asp), Vin = 4.2V and Vout needs to be maximum 3.3V. I used a 2kOhm and a 5,6kOhm resistor.
 2. Wire up the MCP3008 like this mockup: ![Image of wiring](https://github.com/joachimvenaas/gbzbatterymonitor/raw/master/help/mockup.jpg)
 
 ## Software part
