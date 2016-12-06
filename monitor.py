@@ -22,7 +22,7 @@ print("ADC 50% value:               " + str(ADC50))
 print("ADC 25% value:               " + str(ADC25))
 print("ADC dangerous voltage value: " + str(ADC0))
 print(" ")
-print("Time	    ADC     Volt")
+print("Time           ADC          Volt")
 while True:
     ret1 = readadc(ADCCHANNEL, SPICLK, SPIMOSI, SPIMISO, SPICS)
     time.sleep(3)
@@ -31,6 +31,7 @@ while True:
     ret3 = readadc(ADCCHANNEL, SPICLK, SPIMOSI, SPIMISO, SPICS)
     ret = ret1 + ret2 + ret3
     ret = ret/3
-    print(strftime("%H:%M", localtime()) + "         " + str(ret) + "    " + str(((HIGHRESVAL+LOWRESVAL)*ret*(ADCVREF/1024))/HIGHRESVAL))
-        
-    time.sleep(1)
+    print(strftime("%H:%M", localtime()) + "          " + str(ret) + "          " + str(((HIGHRESVAL+LOWRESVAL)*ret*(ADCVREF/1024))/HIGHRESVAL))
+
+    time.sleep(170)
+
