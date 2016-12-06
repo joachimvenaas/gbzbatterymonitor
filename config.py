@@ -11,8 +11,8 @@ ICON = 1
 CLIPS = 1
 
 # GPIO (BOARD numbering scheme) pin for good voltage LED
-GOODVOLTPIN = 16
-LOWVOLTPIN = 15
+GOODVOLTPIN = 18
+LOWVOLTPIN = 17
 
 # Fully charged voltage, voltage at the percentage steps and shutdown voltage. This is where you edit when finetuning the batterymonitor
 # by using the monitor.py script.
