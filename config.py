@@ -16,17 +16,11 @@ LOWVOLTPIN = 15
 
 # Fully charged voltage (for a single battery); 
 #   i.e. 1.4V for a NiMH battery, or 4.2V for a LiPo battery
-FULLBATVOLT = 4.1
-
-# Discharged voltage (for a single battery); 
-#   i.e. 1.05V for a NiMH battery, or 3.4V for a LiPo battery#   You should use a conservative value in order to avoid destructive
-#   discharging
-LOWBATVOLT = 3.4
-
-# Dangerous voltage (for a single battery);
-#   i.e. 1.0V for a NiMH battery, or 3.2V for a LiPo battery
-#   You should really not go below this voltage.
-DNGBATVOLT = 3.2
+VOLT100 = 4.1
+VOLT75 = 3.76
+VOLT50 = 3.63
+VOLT25 = 3.5
+VOLT0 = 3.2
 
 # Value (in ohms) of the lower resistor from the voltage divider, connected to
 #   the ground line (1 if no voltage divider). Default value (3900) is for a 
@@ -43,26 +37,24 @@ HIGHRESVAL = 5600
 # Voltage value measured by the MCP3008 when batteries are fully charged
 
 # It should be near 3.3V due to Raspberry Pi GPIO compatibility)
-VHIGHBAT = (FULLBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
-
-# Voltage value measured by the MCP3008 when batteries are discharged
-VLOWBAT = (LOWBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
-VDNGBAT = (DNGBATVOLT)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
+SVOLT100 = (VOLT100)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
+SVOLT75 = (VOLT75)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
+SVOLT50 = (VOLT50)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
+SVOLT25 = (VOLT25)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
+SVOLT0 = (VOLT0)*(HIGHRESVAL)/(LOWRESVAL+HIGHRESVAL)
 
 # ADC voltage reference (3.3V for Raspberry Pi)
 ADCVREF = 3.3
 
-# MCP23008 channel to use (from 0 to 7)
+# MCP3008 channel to use (from 0 to 7)
 ADCCHANNEL = 0
 
-# MCP23008 should return this value when batteries are fully charged
-#  * 3.3 is the reference voltage (got from Raspberry Pi's +3.3V power line)
-#  * 1024.0 is the number of possible values (MCP23008 is a 10 bit ADC)
-ADC100 = VHIGHBAT / (ADCVREF / 1024.0)
-ADC75 = 860
-ADC50 = 830
-ADC25 = 800
-ADC0 = VDNGBAT / (ADCVREF / 1024.0)
+# MCP3008 scaling
+ADC100 = SVOLT100 / (ADCVREF / 1024.0)
+ADC75 = SVOLT75 / (ADCVREF / 1024.0)
+ADC50 = SVOLT50 / (ADCVREF / 1024.0)
+ADC25 = SVOLT25 / (ADCVREF / 1024.0)
+ADC0 = SVOLT0 / (ADCVREF / 1024.0)
 
 # Refresh rate (s)
 REFRESH_RATE = 2
