@@ -55,8 +55,8 @@ if DEBUGMSG == 1:
     print("Batteries 25% voltage:       	" + str(VOLT25))
     print("Batteries dangerous voltage: 	" + str(VOLT0))
     print("ADC 100% value:      	 	" + str(ADC100))
-    print("ADC 75% value:      	 		" + str(ADC75))
-    print("ADC 50% value:      	 		" + str(ADC50))
+    print("ADC 75% value:			" + str(ADC75))
+    print("ADC 50% value:			" + str(ADC50))
     print("ADC 25% value:       		" + str(ADC25))
     print("ADC dangerous voltage value: 	" + str(ADC0))
 
