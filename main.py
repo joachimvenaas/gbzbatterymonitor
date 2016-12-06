@@ -8,19 +8,36 @@ import subprocess
 import math
 from subprocess import check_output
 
-import threading
-import socket
-
 from config import *
 from mcp3008 import *
 
 warning = 0
-ret = 0
 status = 0
 
-# Roundup to nearest 10
-def roundup(x):
-    return int(math.ceil(x / 10.0)) * 10
+# pngview function
+def changeicon(percent):
+    i = 0
+    killid = 0
+    os.system(PNGVIEWPATH + "/pngview -b 0 -l 3000" + percent + " -x 650 -y 5 " + ICONPATH + "/battery" + percent + ".png &")
+    if DEBUGMSG == 1:
+        print("Changed battery icon to " + percent + "%")
+    out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
+    nums = out.split('\n')
+    for num in nums:
+        i += 1
+        if i == 1:
+            killid = num
+            os.system("sudo kill " + killid)
+
+# LED function
+def changeled(x):
+    if LEDS == 1:
+        if x == "green":
+            GPIO.output(GOODVOLTPIN, GPIO.HIGH)
+            GPIO.output(LOWVOLTPIN, GPIO.LOW)
+        elif x == "red":
+            GPIO.output(GOODVOLTPIN, GPIO.LOW)
+            GPIO.output(LOWVOLTPIN, GPIO.HIGH)
 
 # Called on process interruption. Set all pins to "Input" default mode.
 def endProcess(signalnum = None, handler = None):
@@ -35,7 +52,6 @@ def initPins():
     GPIO.output(GOODVOLTPIN, GPIO.LOW)
     GPIO.output(LOWVOLTPIN, GPIO.LOW)
 
-### Main part
 
 if DEBUGMSG == 1:
     print("Batteries high voltage:       " + str(VHIGHBAT))
@@ -49,21 +65,12 @@ if DEBUGMSG == 1:
 signal.signal(signal.SIGTERM, endProcess)
 signal.signal(signal.SIGINT, endProcess)
 
-# Use Raspberry Pi board pin numbers
 GPIO.setmode(GPIO.BOARD)
-
-# Init output pins
 initPins()
 
-batterystatus = 0
-os.system(PNGVIEWPATH + "/pngview -b 0 -l 299999 -x 650 -y 5 " + ICONPATH + "/battery50.png &")
-
+os.system(PNGVIEWPATH + "/pngview -b 0 -l 299999 -x 650 -y 5 " + ICONPATH + "/blank.png &")
 
 while True:
-    i = 0
-    killid = 0
-
-    # Read ADC measure on channel ADCCHANNEL
     ret1 = readadc(ADCCHANNEL, SPICLK, SPIMOSI, SPIMISO, SPICS)
     time.sleep(3)
     ret2 = readadc(ADCCHANNEL, SPICLK, SPIMOSI, SPIMISO, SPICS)
@@ -75,96 +82,36 @@ while True:
     if DEBUGMSG == 1:
       print("ADC value: " + str(ret) + " (" + str((3.3 / 1024.0) * ret) + " V)")
  
-    if ret < ADCDNG:
+    if ret < ADCDNG: #780?
         # Dangerous battery voltage: Shutdown
         if status != 0:
-            os.system(PNGVIEWPATH + "/pngview -b 0 -l 300000 -x 650 -y 5 " + ICONPATH + "/battery0.png &")
-            if DEBUGMSG == 1:
-                print("Changed battery icon to 0")
-            out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
-            nums = out.split('\n')
-            for num in nums:
-                i += 1
-                if i == 1:
-                    killid = num
-            os.system("sudo kill " + killid)
-        if LEDS == 1:
-            GPIO.output(GOODVOLTPIN, GPIO.LOW)
-            GPIO.output(LOWVOLTPIN, GPIO.HIGH)
-	os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
+            changeicon("0")
+            changeled("red")
+	    os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
         status = 0
-    elif ret < 800:
-        # 25-0%
+    elif ret < ADC25: #800
         # Low battery warning: Switch LED to red, play warning clip
         if status != 25:
-            if LEDS == 1:
-                GPIO.output(GOODVOLTPIN, GPIO.LOW)
-                GPIO.output(LOWVOLTPIN, GPIO.HIGH)
-            os.system(PNGVIEWPATH + "/pngview -b 0 -l 300003 -x 650 -y 5 " + ICONPATH + "/battery25.png &")
-            if DEBUGMSG == 1:
-                print("Changed battery icon to 25")
-            out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
-            nums = out.split('\n')
-            for num in nums:
-                i += 1
-                if i == 1:
-                    killid = num
-            os.system("sudo kill " + killid)
-        if warning == 0:
-            warning = 1
-            os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattalert.mp4 --alpha 160 ");
+            changeled("red")
+            changeicon("25")
+            if warning != 1:
+                os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattalert.mp4 --alpha 160")
+                warning = 1
         status = 25
-    elif ret < 830:
-        # 50-25%
+    elif ret < ADC50: #830
         if status != 50:
-            if LEDS == 1:
-                GPIO.output(GOODVOLTPIN, GPIO.HIGH)
-                GPIO.output(LOWVOLTPIN, GPIO.LOW)
-            os.system(PNGVIEWPATH + "/pngview -b 0 -l 300002 -x 650 -y 5 " + ICONPATH + "/battery50.png &")
-            if DEBUGMSG == 1:
-                print("Changed battery icon to 50")
-            out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
-            nums = out.split('\n')
-            for num in nums:
-                i += 1
-                if i == 1:
-                    killid = num
-            os.system("sudo kill " + killid)
+            changelev("green")
+            changeicon("50")
         status = 50
-    elif ret < 860:
-        # 75-50%
+    elif ret < ADC75: #860
         if status != 75:
-            if LEDS == 1:
-                GPIO.output(GOODVOLTPIN, GPIO.HIGH)
-                GPIO.output(LOWVOLTPIN, GPIO.LOW)
-            os.system(PNGVIEWPATH + "/pngview -b 0 -l 300001 -x 650 -y 5 " + ICONPATH + "/battery75.png &")
-            if DEBUGMSG == 1:
-                print("Changed battery icon to 75")
-            out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
-            nums = out.split('\n')
-            for num in nums:
-                i += 1
-                if i == 1:
-                    killid = num
-            os.system("sudo kill " + killid)
+            changeled("green")
+            changeicon("75")
         status = 75
     else:
-        # 100-75%
         if status != 100:
-            if LEDS == 1:
-                GPIO.output(GOODVOLTPIN, GPIO.HIGH)
-                GPIO.output(LOWVOLTPIN, GPIO.LOW)
-            os.system(PNGVIEWPATH + "/pngview -b 0 -l 300000 -x 650 -y 5 " + ICONPATH + "/battery100.png &")
-            if DEBUGMSG == 1:
-                print("Changed battery icon to 100")
-            out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
-            nums = out.split('\n')
-            for num in nums:
-                i += 1
-                if i == 1:
-                    killid = num
-            os.system("sudo kill " + killid)        
+            changeled("green")
+            changeicon("100")      
         status = 100
 
-    # Pause before starting loop once again
-    time.sleep(REFRESH_RATE / 1000)
+    time.sleep(REFRESH_RATE)
