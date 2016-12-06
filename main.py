@@ -10,31 +10,33 @@ from subprocess import check_output
 
 from config import *
 from mcp3008 import *
-r
 warning = 0
 status = 0
 
 # pngview function
-def changeicon(percent):    i = 0
+def changeicon(percent):
+    i = 0
     killid = 0
     os.system(PNGVIEWPATH + "/pngview -b 0 -l 3000" + percent + " -x 650 -y 5 " + ICONPATH + "/battery" + percent + ".png &")    if DEBUGMSG == 1:
         print("Changed battery icon to " + percent + "%")
     out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
-t    nums = out.split('\n')
+    nums = out.split('\n')
     for num in nums:
         i += 1
         if i == 1:
             killid = num
             os.system("sudo kill " + killid)		
-r# LED function
+
+# LED function
 def changeled(x):
     if LEDS == 1:
         if x == "green":
-s            GPIO.output(GOODVOLTPIN, GPIO.HIGH)
+            GPIO.output(GOODVOLTPIN, GPIO.HIGH)
             GPIO.output(LOWVOLTPIN, GPIO.LOW)
         elif x == "red":
             GPIO.output(GOODVOLTPIN, GPIO.LOW)
             GPIO.output(LOWVOLTPIN, GPIO.HIGH)
+
 # Called on process interruption. Set all pins to "Input" default mode.
 tdef endProcess(signalnum = None, handler = None):
     GPIO.cleanup()
@@ -45,7 +47,7 @@ tdef endProcess(signalnum = None, handler = None):
 def initPins():
     GPIO.setup(GOODVOLTPIN, GPIO.OUT)
     GPIO.setup(LOWVOLTPIN, GPIO.OUT)
-    GPIO.output(GOODVOLTPIN, GPIO.LOW)    GPIO.output(LOWVOLTPIN, GPIO.LOW)
+    GPIO.output(GOODVOLTPIN, GPIO.LOW)   GPIO.output(LOWVOLTPIN, GPIO.LOW)
 
 if DEBUGMSG == 1:
     print("Batteries high voltage:       " + str(VOLT100))
