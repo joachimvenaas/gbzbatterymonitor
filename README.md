@@ -12,9 +12,13 @@
 4. Edit the config by typing `nano config.py` Here you must edit the battery voltages to suit your needs and add the resistor values.
 5. Test the script by running command: `python main.py`
 6. If the script runs as desired you can close it by pressing Ctrl+C
-7.
+7. Add the script to startup by typing `sudo nano /etc/rc.local` and add `python /home/pi/gbzbattery/main.py &` before `exit 0`
 #### Optional
-
+1. Charge your battery to 100%
+2. Run `python monitor.py` to get the exact values from the battery
+3. Let the battery run down to 3.2V
+4. Copy the data to Excel or something simular and calculate the 75%, 50% and 25% values
+5. Edit the config.py file with the newly gattered data to get more accurate batterymeter
 
 ##### Sources and inspiration:
 https://github.com/aboudou/picheckvoltage
