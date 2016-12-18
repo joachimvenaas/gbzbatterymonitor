@@ -87,7 +87,7 @@ while True:
             changeicon("0")
             changeled("red")
             if CLIPS == 1:
-	        os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
+	        os.system("/usr/bin/omxplayer --no-osd --layer 999999  " + ICONPATH + "/lowbattshutdown.mp4 --alpha 160;sudo shutdown -h now")
         status = 0
     elif ret < ADC25:
         if status != 25:
@@ -95,7 +95,7 @@ while True:
             changeicon("25")
             if warning != 1:
 		if CLIPS == 1:
-                    os.system("/usr/bin/omxplayer --no-osd --layer 999999 lowbattalert.mp4 --alpha 160")
+                    os.system("/usr/bin/omxplayer --no-osd --layer 999999  " + ICONPATH + "/lowbattalert.mp4 --alpha 160")
                 warning = 1
         status = 25
     elif ret < ADC50:
