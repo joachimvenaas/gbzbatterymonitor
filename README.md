@@ -16,6 +16,7 @@
 6. If the script runs as desired you can close it by pressing Ctrl+C
 7. Add the script to startup by typing `sudo nano /etc/rc.local` and add `python /home/pi/gbzbattery/main.py &` before `exit 0`
 8. Reboot to test
+9. You can close the script by killing its process id. Find the id by typing `ps aux | grep gbzbattery`. Then `kill <id>`
 
 ### Optional
 1. Charge your battery to 100%
