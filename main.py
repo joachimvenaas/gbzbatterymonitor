@@ -64,8 +64,10 @@ if DEBUGMSG == 1:
 signal.signal(signal.SIGTERM, endProcess)
 signal.signal(signal.SIGINT, endProcess)
 
-GPIO.setmode(GPIO.BOARD)
-initPins()
+if LEDS == 1:
+    GPIO.setmode(GPIO.BOARD)
+    initPins()
+
 os.system(PNGVIEWPATH + "/pngview -b 0 -l 299999 -x 650 -y 5 " + ICONPATH + "/blank.png &")
 
 while True:
