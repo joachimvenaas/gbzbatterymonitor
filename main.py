@@ -13,20 +13,27 @@ from mcp3008 import *
 
 warning = 0
 status = 0
+currentIcon = ""
 
 def changeicon(percent):
-    i = 0
-    killid = 0
-    os.system(PNGVIEWPATH + "/pngview -b 0 -l 3000" + percent + " -x 650 -y 5 " + ICONPATH + "/battery" + percent + ".png &")
-    if DEBUGMSG == 1:
-        print("Changed battery icon to " + percent + "%")
-    out = check_output("ps aux | grep pngview | awk '{ print $2 }'", shell=True)
-    nums = out.split('\n')
-    for num in nums:
-        i += 1
-        if i == 1:
-            killid = num
-            os.system("sudo kill " + killid)		
+    global currentIcon
+    if currentIcon != percent:
+        currentIcon = percent
+        cmdLine = PNGVIEWPATH + "/pngview -b 0x000F -l 3000" + percent + " -x 425 -y 1 " + ICONPATH + "/battery_" + percent + ".png &"
+        newPngViewProcessPid = int(subprocess.Popen(cmdLine.split(" ")).pid)
+        if DEBUGMSG == 1:
+            print("cmdLine: " + cmdLine + ", newPngViewProcessPid: " + str(newPngViewProcessPid))
+        out = check_output("ps aux | grep [p]ngview | awk '{ print $2 }'", shell=True)
+        for pid in out.split('\n'):
+            if pid.isdigit() and int(pid) != newPngViewProcessPid:
+                if DEBUGMSG == 1:
+                    print("killing: " + str(pid))
+                os.system("kill " + pid)
+        if DEBUGMSG == 1:
+            print("Changed battery icon to " + percent + "%")
+    else:
+        if DEBUGMSG == 1:
+            print("Changing of icon not needed")
 
 def changeled(x):
     if LEDS == 1:
